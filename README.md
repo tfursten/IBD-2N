@@ -14,7 +14,7 @@ Arizona State University
 
 Description
 -----------
-In the simulation, a population exists on a NxN rectangular lattice with either periodic boundaries (a torus) or absorbing boundaries. Individuals are uniformly distributed on the lattice with a single individual per node. Individuals are diploid and contain **n** independent genetic loci.
+In the simulation, a population exists on a NxN rectangular lattice with periodic boundaries (a torus). Individuals are uniformly distributed on the lattice with a single individual per node. Individuals are diploid and contain *n* independent genetic loci.
 
 In the initial generation, the population contains the maximum number of individuals allowed by the landscape and each individual is assigned a unique allele (represented by an integer). During every discrete generation cycle, all individuals reproduce by producing a set number of clonal offspring.  These offspring experinece mutations according to the infinite alleles model at rate mu. Each new allele is selectively neutral. A burn-in period may be set to allow the population to reach a drift/mutation equilibrium. 
 
