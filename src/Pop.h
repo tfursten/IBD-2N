@@ -64,7 +64,6 @@ private:
 	int m_nIndividuals;
 	int m_nMarkers;
 	int m_nSample;
-	int m_nPopSample;
 	int m_nDistClass;
 	int m_nPairs;
 	int m_nTotGametes;
@@ -99,7 +98,7 @@ public:
     Population(std::ofstream &p,std::ofstream &nb, bool v): pout(p), nbout(nb), verbose(v) {};
     void initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, double dSigma,
     	vector<double> vdMut, unsigned int seed, int nSample, 
-    	int nPopSample, string dist_name, float param, 
+    	string dist_name, float param, 
     	bool fast, int nclass, int npairs);
 	void evolve(int m_nGenerations, int m_nBurnIn);
 };

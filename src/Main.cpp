@@ -6,7 +6,7 @@ int main(int ac, char** av)
 	namespace po = boost::program_options;
     using namespace std;
 
-    static int nGenerations, nMaxX, nMaxY, nOffspring, nBurnIn, nSample, nPopSample, ndClass, nPairs, nMarkers;
+    static int nGenerations, nMaxX, nMaxY, nOffspring, nBurnIn, nSample, ndClass, nPairs, nMarkers;
     unsigned int seed;
     //static double dMut;
     static vector<double> vdMut;
@@ -31,12 +31,11 @@ int main(int ac, char** av)
             ("generations,g", po::value<int>(&nGenerations)->default_value(10), "Set number of Generations to run after burn-in")
             ("offspring,o", po::value<int>(&nOffspring)->default_value(10), "Set number of offspring per individual")
             ("markers,m", po::value<int>(&nMarkers)->default_value(1), "Set number of markers")
-            ("mut", po::value<vector<double>>(&vdMut)->multitoken()->required(), "Set mutation rates")
+            ("mut", po::value<vector<double>>(&vdMut)->multitoken()->default_value(vector<double>(1,0.0001),"0.0001"), "Set mutation rates")
             ("distribution,d", po::value<string>(&dist_name)->default_value("triangular"), "Set Dispersal Distribution")
             ("sigma,s", po::value<double>(&dSigma)->default_value(2.0), "Set dispersal parameter")
             ("burn,b", po::value<int>(&nBurnIn)->default_value(0),"Set Burn-in Period")
             ("sample,t", po::value<int>(&nSample)->default_value(1),"Sample every n generations after burn-in")
-            ("pop_sample", po::value<int>(&nPopSample)->default_value(100000), "Sample a full population every n generations after burn-in")
             ("output_file,f", po::value<string>(&outfileName)->default_value(string("data")),"Output File Name")
             ("seed", po::value<unsigned int>(&seed)->default_value(0), "Set PRNG seed, 0 to create random seed")
             ("verbose", po::value<bool>(&verbose)->default_value(false),"Print data to screen")
@@ -108,7 +107,6 @@ int main(int ac, char** av)
         << "Run for " << nGenerations << " generations.\n"
         << "Burn " << nBurnIn << " generation(s).\n"
         << "Collect data every " << nSample << " Generation(s).\n"
-        << "Collect population every " << nPopSample << " Generation(s).\n"
         << "Number of Offspring set to " << nOffspring << ".\n"
         << "Number of markers set to " << nMarkers << ".\n"
         << "Dispersal parameter set to " << dSigma << ".\n"
@@ -143,7 +141,7 @@ int main(int ac, char** av)
     clock_t start = clock();
     Population pop(pout, nbout, verbose);
 	pop.initialize(nMaxX,nMaxY,nOffspring,nMarkers,dSigma,vdMut,seed, nSample,\
-        nPopSample, dist_name, param, f, ndClass, nPairs);
+    dist_name, param, f, ndClass, nPairs);
 	//Run Simulation
 	pop.evolve(nBurnIn, nGenerations);
 	clock_t end = clock();

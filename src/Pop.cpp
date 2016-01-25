@@ -41,7 +41,7 @@ inline int xy2i(xyCoord xy, int mx, int my) {
 }
 
 void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, double dSigma, vector<double> vdMut,
-                            unsigned int seed, int nSample, int nPopSample,
+                            unsigned int seed, int nSample,
                             string dist_name, float param, bool fast, int nclass, int npairs)
 {
     ostringstream out;
@@ -75,7 +75,6 @@ void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, 
     m_nMarkers = nMarkers;
     m_nMutCount = setMutCount();
     m_nSample = nSample;
-    m_nPopSample = nPopSample;
     m_dSigma = dSigma;
     disp.initialize(dist_name, m_nMaxX, m_nMaxY, fast, "torus", dSigma, param);
     out << "Dispersal distribution set to " << disp.getName() << ".\n" ;
@@ -211,13 +210,13 @@ void Population::disperse_step(int parent)
         //competition for cell
         unsigned int min_weight = min(parentThere.nWeight_1, parentThere.nWeight_2);
         //cout << parentThere.nWeight_1 << " " << parentThere.nWeight_2 << endl;
-        bool replace = (parentThere.nWeight_1 <= parentThere.nWeight_2 ? 0 : 1);
+        bool replace1 = (parentThere.nWeight_1 <= parentThere.nWeight_2 ? 0 : 1);
         if(nSeedWeight > min_weight)
         {
         //	cout << "MIN WEIGHT: " << min_weight << endl;
         //	cout << "SEED WEIGHT: " << nSeedWeight << endl;
         //	cout << "IN" << replace << endl;
-        	if(replace){
+        	if(replace1){
         //		cout << "R2" << endl;
         		parentThere.nWeight_2 = nSeedWeight;
         		parentThere.nParent_2 = parent;
@@ -238,20 +237,25 @@ void Population::mutation_step(){
 	//Make a map of gamete ID's that need a mutation
 	//it is possible to draw the same gamete twice
 	m_mMutations.clear();
-	int count = m_nMutCount;
-	int n = 0;
+
+    if(m_nMutCount >= m_nTotGametes){
+        m_nMutCount -= m_nTotGametes;
+        return;
+    }
+    int count = m_nMutCount;
+    int n=0;
 	while(count<m_nTotGametes){
-		n = m_nTotGametes - count;
+        n = m_nTotGametes - count;
 		std::map<int,int>::iterator it;
 		it = m_mMutations.find(count);
 		if (it !=m_mMutations.end())
 			it->second += 1;
 		else
-			m_mMutations[count] = count;
+			m_mMutations[count] = 1;
 		//m_vMutation.push_back(count);
 		count+= setMutCount();
-	m_nMutCount = count - n;
 	}
+    m_nMutCount = count - n;
 }
 
 gam Population::make_gamete(gam &parent1, gam &parent2){
@@ -329,7 +333,7 @@ float Population::nbSize(vector<int> & counts){
 }
 
 void Population::sampleNb(int gen){
-	map<int,int> alleles;
+	vector<map<int,int>> alleles (m_nMarkers);
     vector<individual> pop(m_vPop2);
     random_shuffle(pop.begin(),pop.end());
     vector<int> vN(m_nDistClass,0);
@@ -370,8 +374,8 @@ void Population::sampleNb(int gen){
             	nbout << ind1.vgamete_1[m] << "/" << ind1.vgamete_2[m]
             	<< ((m<m_nMarkers-1) ? "\t": "\n");
             	if(verbose){
-            		alleles[ind1.vgamete_1[m]] ++;
-            		alleles[ind1.vgamete_2[m]] ++;
+            		alleles[m][ind1.vgamete_1[m]] ++;
+            		//alleles[m][ind1.vgamete_2[m]] ++;
             	}
             }
             nbout << gen << "\t" << x2 << "\t" << y2
@@ -381,8 +385,8 @@ void Population::sampleNb(int gen){
             	nbout << ind2.vgamete_1[m] << "/" << ind2.vgamete_2[m]
             	<< ((m<m_nMarkers-1) ? "\t": "\n");
             	if(verbose){
-            		alleles[ind2.vgamete_1[m]] ++;
-            		alleles[ind2.vgamete_2[m]] ++;
+            		alleles[m][ind2.vgamete_1[m]] ++;
+            		//alleles[m][ind2.vgamete_2[m]] ++;
             	}
             }
             vN[d-1] += 1;
@@ -395,8 +399,11 @@ void Population::sampleNb(int gen){
             pop.erase(pop.begin());
     }
     if(verbose){
-    	cout << "Gen: " << gen << " Ko: " << alleles.size() << endl;
-    	pout << "Gen: " << gen << " Ko: " << alleles.size() << endl;
+    	cout << "Gen: " << gen << " Ko: ";
+        pout << "Gen: " << gen << " Ko: ";
+        for(int m=0; m <m_nMarkers; m++){
+            cout << alleles[m].size() << ((m<m_nMarkers-1) ? " " : "\n");
+            pout << alleles[m].size() << ((m<m_nMarkers-1) ? " " : "\n");
+        }
     }
-
 }
