@@ -86,20 +86,24 @@ Configuration:
   -g [ --generations ] arg (=10)        Set number of Generations to run after 
                                         burn-in
   -o [ --offspring ] arg (=10)          Set number of offspring per individual
-  -m [ --mut ] arg (=0)                 Set mutation rate
+  -m [ --markers ] arg (=1)             Set number of markers
+  --mut arg (=0.0001)                   Set mutation rates
   -d [ --distribution ] arg (=triangular)
                                         Set Dispersal Distribution
   -s [ --sigma ] arg (=2)               Set dispersal parameter
   -b [ --burn ] arg (=0)                Set Burn-in Period
   -t [ --sample ] arg (=1)              Sample every n generations after 
                                         burn-in
+  --pop_sample arg (=100000)            Sample a full population every n 
+                                        generations after burn-in
   -f [ --output_file ] arg (=data)      Output File Name
   --seed arg (=0)                       Set PRNG seed, 0 to create random seed
-  --landscape arg (=torus)              Set boundary conditions: torus or 
-                                        rectangular
-  --transect arg (=0)                   Set position of transect in X axis.
   --verbose arg (=0)                    Print data to screen
   --sparam arg (=0)                     Extra Parameter for dispersal
   --fast arg (=1)                       Use fast dispersal when available
+  --ndistClass arg (=20)                Number of distance classes for Nb 
+                                        estimate
+  --nPairs arg (=20)                    Number of pairs for Nb estimate
+
 
 
