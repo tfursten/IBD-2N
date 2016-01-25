@@ -1,0 +1,29 @@
+INCLUDE(CheckIncludeFile)
+INCLUDE(CheckFunctionExists)
+INCLUDE(CheckLibraryExists)
+
+#INCLUDE_DIRECTORIES(BEFORE "${CMAKE_CURRENT_BINARY_DIR}")
+
+SET(Boost_ADDITIONAL_VERSIONS 1.60 1.59 1.58 1.57 1.56 1.55 1.54 1.53)
+
+FIND_PACKAGE(Boost 1.36.0 REQUIRED COMPONENTS program_options ${USING_BOOST_THREAD})
+IF(Boost_FOUND)
+  ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB -DBOOST_PROGRAM_OPTIONS_NO_LIB)
+  INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+  LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+  IF(NOT Boost_USE_STATIC_LIBS)
+    ADD_DEFINITIONS(-DBOOST_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK)
+  ENDIF(NOT Boost_USE_STATIC_LIBS)
+ENDIF(Boost_FOUND)
+
+
+ADD_EXECUTABLE(ibd
+  Main.cpp Pop.cpp disk.cpp ray.cpp ring.cpp
+  rexp.cpp rnormal.cpp disperse.cpp
+  Main.h Pop.h disperse.h aliastable.h disk.h
+  xorshift64.h
+  rexp.h rnormal.h ray.h ring.h
+)
+
+TARGET_LINK_LIBRARIES(ibd ${Boost_LIBRARIES})
+

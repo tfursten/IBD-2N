@@ -1,0 +1,13 @@
+maxX = 100
+maxY = 100
+generations = 1000
+offspring = 100
+markers = 1
+mut = "0.001"
+distribution = tri
+sigma = 1
+burn = 100
+sample = 500
+output_file = test
+fast = 1
+
