@@ -396,6 +396,7 @@ void Population::sampleNb(int gen){
     }
     if(verbose){
     	cout << "Gen: " << gen << " Ko: " << alleles.size() << endl;
+    	pout << "Gen: " << gen << " Ko: " << alleles.size() << endl;
     }
 
 }
