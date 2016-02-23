@@ -42,7 +42,8 @@ inline int xy2i(xyCoord xy, int mx, int my) {
 
 void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, double dSigma, vector<double> vdMut,
                             unsigned int seed, int nSample,
-                            string dist_name, float param, bool fast, int nclass, int npairs)
+                            string dist_name, float param, bool fast, int nclass, int npairs,
+                            string mut_type, int nAlleles)
 {
     ostringstream out;
 
@@ -59,6 +60,11 @@ void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, 
     m_nOffspring = nOffspring;
     m_nDistClass = nclass;
     m_nPairs = npairs;
+    if(mut_type == "IAM")
+        mutate = &Population::mutate_iam;
+    else
+        mutate = &Population::mutate_smm;
+    m_nAlleles = nAlleles;
     m_vdMut = vdMut;
     m_dTotMut = 1.0;
 	for(vector<double>::iterator it = m_vdMut.begin();it!=m_vdMut.end();++it){
@@ -80,19 +86,34 @@ void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, 
     out << "Dispersal distribution set to " << disp.getName() << ".\n" ;
     out << "Extra parameter set to " << param << ".\n";
 
-
+    if(mut_type == "IAM"){
     // Initialize Population: each individual has unique allele
-    for(int iii=0; iii<m_nIndividuals; iii++) {
-        gam h1;
-        gam h2;
-        gam h3 (m_nMarkers,0);
-        for(int iii=0; iii<m_nMarkers; iii++){
-        	h1.push_back(m_nAlleleID++);
-        	h2.push_back(m_nAlleleID++);
+        for(int iii=0; iii<m_nIndividuals; iii++) {
+            gam h1;
+            gam h2;
+            gam h3 (m_nMarkers,0);
+            for(int jjj=0; jjj<m_nMarkers; jjj++){
+            	h1.push_back(m_nAlleleID++);
+            	h2.push_back(m_nAlleleID++);
+            }
+            xyCoord xy = i2xy(iii, m_nMaxX, m_nMaxY);
+            m_vPop1.emplace_back(xy,1,h1,h2,iii,iii);
+            m_vPop2.emplace_back(xy,0,h3,h3,0,0);
         }
-        xyCoord xy = i2xy(iii, m_nMaxX, m_nMaxY);
-        m_vPop1.emplace_back(xy,1,h1,h2,iii,iii);
-        m_vPop2.emplace_back(xy,0,h3,h3,0,0);
+    }
+    else{
+        for(int iii=0; iii<m_nIndividuals; iii++) {
+            gam h1;
+            gam h2;
+            gam h3 (m_nMarkers,0);
+            for(int jjj=0; jjj<m_nMarkers; jjj++){
+                h1.push_back(m_myrand.get_uint(m_nAlleles));
+                h2.push_back(m_myrand.get_uint(m_nAlleles));
+            }
+            xyCoord xy = i2xy(iii, m_nMaxX, m_nMaxY);
+            m_vPop1.emplace_back(xy,1,h1,h2,iii,iii);
+            m_vPop2.emplace_back(xy,0,h3,h3,0,0);
+        }
     }
 
     //write settings to screen and file
@@ -108,9 +129,19 @@ int Population::setMutCount() {
 
 //Each mutational event creates a new allele unlike any other allele currently in the population
 //so that identity in state for two or more alleles is always an indication of identity by descent.
-void Population::mutate(gam & gamete)
+void Population::mutate_iam(gam & gamete)
 {
     gamete[alias_mut(m_myrand.get_uint64())] = m_nAlleleID ++;
+}
+
+void Population::mutate_smm(gam & gamete)
+{
+	uint64_t n = m_myrand.get_uint64();
+    int pos = alias_mut(n);
+    if((n>>32) %2)
+        gamete[pos] = (gamete[pos]==m_nAlleles-1 ? gamete[pos]-1 : gamete[pos]+1);
+    else
+        gamete[pos] = (gamete[pos]==0 ? 1 : gamete[pos]-1);
 }
 
 void Population::evolve(int m_nBurnIn, int m_nGenerations)
@@ -301,13 +332,13 @@ void Population::reproduction_step(int offspring)
 	it = m_mMutations.find(offspringHere.ngameteID_1);
 	if(it != m_mMutations.end()){
 		for(int iii=0; iii<it->second; iii++){
-			mutate(offspringHere.vgamete_1);
+			(this->*mutate)(offspringHere.vgamete_1);
 		}
 	}
 	it = m_mMutations.find(offspringHere.ngameteID_2);
 	if(it != m_mMutations.end()){
 		for(int iii=0; iii<it->second; iii++){
-			mutate(offspringHere.vgamete_2);
+			(this->*mutate)(offspringHere.vgamete_2);
 		}
 	}
 }

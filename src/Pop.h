@@ -67,6 +67,7 @@ private:
 	int m_nDistClass;
 	int m_nPairs;
 	int m_nTotGametes;
+	int m_nAlleles;
 	xorshift64 m_myrand;
 	std::ofstream & pout;
 	std::ofstream & nbout;
@@ -82,7 +83,8 @@ private:
 	void disperse_step(int parent);
 	void mutation_step();
 	void reproduction_step(int offspring);
-	void mutate(gam & gamete);
+	void mutate_iam(gam & gamete);
+	void mutate_smm(gam & gamete);
 	void sampleIBD(int gen);
 	void samplePop();
 	void sampleDist();
@@ -92,6 +94,7 @@ private:
 
 protected:
     int(Population::*disperse)(int,int);
+    void(Population::*mutate)(gam &gamete);
 
 public:
     
@@ -99,7 +102,7 @@ public:
     void initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, double dSigma,
     	vector<double> vdMut, unsigned int seed, int nSample, 
     	string dist_name, float param, 
-    	bool fast, int nclass, int npairs);
+    	bool fast, int nclass, int npairs, string mut_type, int nAlleles);
 	void evolve(int m_nGenerations, int m_nBurnIn);
 };
 

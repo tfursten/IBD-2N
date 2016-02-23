@@ -6,14 +6,14 @@ int main(int ac, char** av)
 	namespace po = boost::program_options;
     using namespace std;
 
-    static int nGenerations, nMaxX, nMaxY, nOffspring, nBurnIn, nSample, ndClass, nPairs, nMarkers;
+    static int nGenerations, nMaxX, nMaxY, nOffspring, nBurnIn, nSample, ndClass, nPairs, nMarkers, nAlleles;
     unsigned int seed;
     //static double dMut;
     static vector<double> vdMut;
     static double dSigma;
     static float param;
     bool f;
-    string dist_name, infile, outfileName;
+    string dist_name, infile, outfileName, mut_type;
     bool verbose;
 
     ostringstream out;
@@ -43,6 +43,8 @@ int main(int ac, char** av)
             ("fast", po::value<bool>(&f)->default_value(true),"Use fast dispersal when available")
             ("ndistClass", po::value<int>(&ndClass)->default_value(20),"Number of distance classes for Nb estimate")
             ("nPairs", po::value<int>(&nPairs)->default_value(20),"Number of pairs for Nb estimate")
+            ("mut-type", po::value<string>(&mut_type)->default_value(string("IAM")),"Mutation Model (IAM or SMM)")
+            ("nAllele", po::value<int>(&nAlleles)->default_value(20),"Number of alleles under SMM")
             ;
 
         po::options_description hidden("Hidden Options");
@@ -100,6 +102,10 @@ int main(int ac, char** av)
             cout << "Sample size is larger than population size" << endl;
             throw;
         }
+        if(mut_type != "IAM" && mut_type != "SMM"){
+            cout << "Not a valid mutation model" << endl;
+            throw;
+        }
             
         }
         out << "X dimension set to " << nMaxX << ".\n"
@@ -112,7 +118,10 @@ int main(int ac, char** av)
         << "Dispersal parameter set to " << dSigma << ".\n"
         << "Number of distances classes for Nb estimate set to " << ndClass << ".\n"
         << "Number of pairs collected for Nb estimate set to " << nPairs << ".\n"
-        << "Mutation rate(s) set to ";
+        << "Mutation model set to " << mut_type << ".\n";
+        if(mut_type == "SMM")
+            out << "Number of alleles set to " << nAlleles << ".\n";
+        out << "Mutation rate(s) set to ";
         for(auto i=vdMut.begin();i!=vdMut.end();++i){
             out << *i << " ";
         }
@@ -141,7 +150,7 @@ int main(int ac, char** av)
     clock_t start = clock();
     Population pop(pout, nbout, verbose);
 	pop.initialize(nMaxX,nMaxY,nOffspring,nMarkers,dSigma,vdMut,seed, nSample,\
-    dist_name, param, f, ndClass, nPairs);
+    dist_name, param, f, ndClass, nPairs, mut_type, nAlleles);
 	//Run Simulation
 	pop.evolve(nBurnIn, nGenerations);
 	clock_t end = clock();
