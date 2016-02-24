@@ -62,8 +62,10 @@ void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, 
     m_nPairs = npairs;
     if(mut_type == "IAM")
         mutate = &Population::mutate_iam;
-    else
+    else if(mut_type == "SMM")
         mutate = &Population::mutate_smm;
+    else if(mut_type == "KAM")
+        mutate = &Population::mutate_kam;
     m_nAlleles = nAlleles;
     m_vdMut = vdMut;
     m_dTotMut = 1.0;
@@ -142,6 +144,11 @@ void Population::mutate_smm(gam & gamete)
         gamete[pos] = (gamete[pos]==m_nAlleles-1 ? gamete[pos]-1 : gamete[pos]+1);
     else
         gamete[pos] = (gamete[pos]==0 ? 1 : gamete[pos]-1);
+}
+
+void Population::mutate_kam(gam & gamete)
+{
+    gamete[alias_mut(m_myrand.get_uint64())] = m_myrand.get_uint(m_nAlleles);
 }
 
 void Population::evolve(int m_nBurnIn, int m_nGenerations)

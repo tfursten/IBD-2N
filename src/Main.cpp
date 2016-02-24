@@ -43,8 +43,8 @@ int main(int ac, char** av)
             ("fast", po::value<bool>(&f)->default_value(true),"Use fast dispersal when available")
             ("ndistClass", po::value<int>(&ndClass)->default_value(20),"Number of distance classes for Nb estimate")
             ("nPairs", po::value<int>(&nPairs)->default_value(20),"Number of pairs for Nb estimate")
-            ("mut-type", po::value<string>(&mut_type)->default_value(string("IAM")),"Mutation Model (IAM or SMM)")
-            ("nAllele", po::value<int>(&nAlleles)->default_value(20),"Number of alleles under SMM")
+            ("mut-type", po::value<string>(&mut_type)->default_value(string("IAM")),"Mutation Model (IAM, KAM or SMM)")
+            ("nAllele", po::value<int>(&nAlleles)->default_value(20),"Number of alleles under SMM and KAM")
             ;
 
         po::options_description hidden("Hidden Options");
@@ -102,7 +102,7 @@ int main(int ac, char** av)
             cout << "Sample size is larger than population size" << endl;
             throw;
         }
-        if(mut_type != "IAM" && mut_type != "SMM"){
+        if(mut_type != "IAM" && mut_type != "SMM" && mut_type != "KAM"){
             cout << "Not a valid mutation model" << endl;
             throw;
         }
@@ -119,7 +119,7 @@ int main(int ac, char** av)
         << "Number of distances classes for Nb estimate set to " << ndClass << ".\n"
         << "Number of pairs collected for Nb estimate set to " << nPairs << ".\n"
         << "Mutation model set to " << mut_type << ".\n";
-        if(mut_type == "SMM")
+        if(mut_type == "SMM" || mut_type == "KAM")
             out << "Number of alleles set to " << nAlleles << ".\n";
         out << "Mutation rate(s) set to ";
         for(auto i=vdMut.begin();i!=vdMut.end();++i){

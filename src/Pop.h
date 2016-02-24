@@ -85,6 +85,7 @@ private:
 	void reproduction_step(int offspring);
 	void mutate_iam(gam & gamete);
 	void mutate_smm(gam & gamete);
+	void mutate_kam(gam & gamete);
 	void sampleIBD(int gen);
 	void samplePop();
 	void sampleDist();
