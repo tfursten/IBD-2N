@@ -76,6 +76,7 @@ private:
 	alias_table alias_mut;
 	map<int,int> m_mMutations;
 	std::vector<double> m_vdMut;
+	std::vector<int> m_vSample;
 	std::vector<individual> m_vPop1;
 	std::vector<individual> m_vPop2;
 	int m_nAlleleID;

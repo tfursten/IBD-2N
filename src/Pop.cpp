@@ -122,6 +122,13 @@ void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, 
     cout << out.str();
     pout << out.str();
 
+    //Sampling scheme index list
+    for(int xxx=0; xxx<10; xxx++){
+        for(int yyy=0; yyy<10; yyy++){
+            m_vSample.push_back(xy2i(xxx, yyy, m_nMaxX, m_nMaxY));
+        }
+    }
+
 }
 
 int Population::setMutCount() {
@@ -170,7 +177,7 @@ void Population::evolve(int m_nBurnIn, int m_nGenerations)
         swap(m_vPop1,m_vPop2);
     }
     //outfile headers
-    nbout << "Gen\tX\tY\tNb\tNb_raw\tp1_d\tp2_d\t";
+    nbout << "Gen\tX\tY\t";
     for(int m=1; m <= m_nMarkers; m++){
     	nbout << "M" << m << (m==m_nMarkers ? "\n" : "\t");
     }
@@ -370,6 +377,29 @@ float Population::nbSize(vector<int> & counts){
 	return 1/(psum/(float)(tot*tot));
 }
 
+
+
+
+void Population::sampleNb(int gen){
+    vector<map<int,int>> alleles (m_nMarkers);
+    vector<int> vN(m_nDistClass,0);
+    for(vector<int>::iterator it = m_vSample.begin(); it != m_vSample.end(); ++it){
+        individual ind1 = m_vPop2[*it];
+        if(ind1.nWeight_1==0 || ind1.nWeight_2==0)
+            continue;
+        nbout << gen << "\t" << ind1.xy.first << "\t" << ind1.xy.second << "\t";
+        for(int m=0; m<m_nMarkers; m++){
+            nbout << ind1.vgamete_1[m] << "/" << ind1.vgamete_2[m]
+            << ((m<m_nMarkers-1) ? "\t": "\n");
+        }
+    }
+}
+
+
+
+
+
+/*
 void Population::sampleNb(int gen){
 	vector<map<int,int>> alleles (m_nMarkers);
     vector<individual> pop(m_vPop2);
@@ -445,3 +475,4 @@ void Population::sampleNb(int gen){
         }
     }
 }
+*/
