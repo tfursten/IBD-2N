@@ -123,8 +123,8 @@ void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, 
     pout << out.str();
 
     //Sampling scheme index list
-    for(int xxx=0; xxx<10; xxx++){
-        for(int yyy=0; yyy<10; yyy++){
+    for(int xxx=0; xxx<25; xxx++){
+        for(int yyy=0; yyy<25; yyy++){
             m_vSample.push_back(xy2i(xxx, yyy, m_nMaxX, m_nMaxY));
         }
     }
@@ -167,9 +167,9 @@ void Population::evolve(int m_nBurnIn, int m_nGenerations)
         {
             disperse_step(parent);
         }
-        
+
         mutation_step();
-        
+
         for(int offspring=0; offspring<m_nIndividuals; offspring++)
         {
         	reproduction_step(offspring);
@@ -189,7 +189,7 @@ void Population::evolve(int m_nBurnIn, int m_nGenerations)
         {
             disperse_step(parent);
         }
-        
+
         mutation_step();
 
         for(int offspring=0; offspring<m_nIndividuals;offspring++)
