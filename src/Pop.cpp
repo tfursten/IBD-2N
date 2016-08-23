@@ -123,8 +123,8 @@ void Population::initialize(int nMaxX, int nMaxY, int nOffspring, int nMarkers, 
     pout << out.str();
 
     //Sampling scheme index list
-    for(int xxx=0; xxx<25; xxx++){
-        for(int yyy=0; yyy<25; yyy++){
+    for(int xxx=0; xxx<30; xxx++){
+        for(int yyy=0; yyy<30; yyy++){
             m_vSample.push_back(xy2i(xxx, yyy, m_nMaxX, m_nMaxY));
         }
     }
